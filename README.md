@@ -1,0 +1,2 @@
+# cli
+Outpost CLI
