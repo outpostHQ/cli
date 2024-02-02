@@ -1,5 +1,11 @@
 # Outpost CLI
 
+This is a Outpost CLI for [Outpost](https://outpost.run). It lets you run models from your terminal, and do various other things on Outpost.
+
+## Requirements
+
+- Python 3.8+
+
 ## Getting Started
 
 Install the library with
