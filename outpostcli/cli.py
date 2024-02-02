@@ -1,11 +1,8 @@
 import json
+
 import click
-
 import outpostkit
-
-from .inferences import inferences
-from .constants import cli_version
-from .exceptions import NotLoggedInError
+from outpostkit import Client
 
 from .config_utils import (
     get_default_api_token_from_config,
@@ -13,8 +10,11 @@ from .config_utils import (
     remove_details_from_config_file,
     write_details_to_config_file,
 )
-from .utils import click_group, check_token
-from outpostkit import Client
+from .constants import cli_version
+from .exceptions import NotLoggedInError
+from .inference import inference
+from .inferences import inferences
+from .utils import check_token, click_group
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -27,6 +27,7 @@ def outpostcli():
 
 # # Add subcommands
 outpostcli.add_command(inferences)
+outpostcli.add_command(inference)
 # job.add_command(lep)
 # kv.add_command(lep)
 # objectstore.add_command(lep)
