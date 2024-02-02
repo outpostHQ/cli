@@ -46,7 +46,6 @@ outpostcli.add_command(inferences)
     default=None,
     prompt=True,
     hide_input=True,
-    confirmation_prompt=True,
 )
 def login(api_token: str):
     """

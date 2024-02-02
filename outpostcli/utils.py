@@ -1,5 +1,7 @@
+from typing import Optional
 import click
 from rich.console import Console
+from outpostkit.inference import InferenceOutpostModel, InferenceHuggingfaceModel
 
 
 console = Console(highlight=False)
@@ -46,3 +48,16 @@ def check_token(token: str):
     except Exception as e:
         click.echo(e)
         return -1, None
+
+
+def combine_inf_load_source_model(
+    load_source,
+    outpost_model: Optional[InferenceOutpostModel],
+    hf_model: Optional[InferenceHuggingfaceModel],
+):
+    if load_source == "hugginface" and hf_model:
+        return f"hf:{hf_model.id}"
+    elif load_source == "outpost" and outpost_model:
+        return f"{outpost_model.model.fullName}"
+    else:
+        return "custom"

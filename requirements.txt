@@ -1,0 +1,3 @@
+outpostkit==0.0.21
+click
+rich
