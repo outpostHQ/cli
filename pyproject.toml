@@ -11,7 +11,7 @@ license = { file = "LICENSE" }
 authors = [{ name = "Outpost Innovations, Inc." }]
 requires-python = ">=3.8"
 dependencies = [
-    "outpostkit>=0.0.21",
+    "outpostkit>=0.0.22",
     "packaging",
     "pydantic>1",
     "click",
@@ -39,7 +39,7 @@ testpaths = "tests/"
 packages = ["outpostcli"]
 
 [project.scripts]
-outpostcli = outpostcli.cli:outpostcli"
+outpostcli = "outpostcli.cli:outpostcli"
 
 [tool.setuptools.package-data]
 "outpostcli" = ["py.typed"]
@@ -84,5 +84,8 @@ ignore = [
 "tests/*" = [
     "S101",   # Use of assert
     "S106",   # Possible use of hard-coded password function arguments
+    "ANN201", # Missing return type annotation for public function
+]
+"outpostcli/**" = [
     "ANN201", # Missing return type annotation for public function
 ]

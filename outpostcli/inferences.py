@@ -1,14 +1,16 @@
 import click
+from outpostkit import Client
+from outpostkit.inference import Inferences
+from outpostkit.utils import convert_outpost_date_str_to_date
+from rich.table import Table
+
 from outpostcli.config_utils import (
     get_default_api_token_from_config,
     get_default_entity_from_config,
 )
 from outpostcli.exceptions import SourceNotSupportedError
 from outpostcli.utils import click_group, combine_inf_load_source_model, console
-from outpostkit import Client
-from outpostkit.inference import Inferences
-from outpostkit.utils import convert_outpost_date_str_to_date
-from rich.table import Table
+
 
 @click_group()
 def inferences():
@@ -23,7 +25,7 @@ def inferences():
 @click.option("--entity", "-e", default=lambda: get_default_entity_from_config())
 def list_inferences(api_token, entity):
     client = Client(api_token=api_token)
-    infs_resp = Inferences(client=client, entity=entity).list
+    infs_resp = Inferences(client=client, entity=entity).list()
     inf_table = Table(
         title=f"Inference Services ({infs_resp.total})",
     )
@@ -32,6 +34,7 @@ def list_inferences(api_token, entity):
     inf_table.add_column("model")
     inf_table.add_column("status")
     inf_table.add_column("instance_type")
+    inf_table.add_column("visibility")
     inf_table.add_column("updated_at", justify="right")
     for inf in infs_resp.inferences:
         inf_table.add_row(
@@ -41,6 +44,7 @@ def list_inferences(api_token, entity):
             ),
             inf.status,
             inf.instanceType,
+            inf.visibility,
             convert_outpost_date_str_to_date(inf.updatedAt).isoformat(),
         )
 
@@ -82,13 +86,13 @@ def create_inference(
     if len(m_splits) == 1:
         model_details = {
             "loadModelWeightsFrom": "outpost",
-            "outpostModelDetails": {"fullName": model, "commit": revision},
+            "outpostModel": {"fullName": model, "commit": revision},
         }
     else:
         if m_splits[0] == "hf" or m_splits[0] == "huggingface":
             model_details = {
                 "loadModelWeightsFrom": "huggingface",
-                "huggingfaceModelDetails": {"id": m_splits[1], "revision": revision},
+                "huggingfaceModel": {"id": m_splits[1], "revision": revision},
                 "keyId": huggingface_token_id,
             }
         else:
