@@ -4,22 +4,7 @@ version = 1
 name = "shell"
 
 [[analyzers]]
-name = "sql"
-
-[[analyzers]]
-name = "test-coverage"
-
-[[analyzers]]
-name = "csharp"
-
-[[analyzers]]
-name = "cxx"
-
-[[analyzers]]
 name = "secrets"
-
-[[analyzers]]
-name = "docker"
 
 [[analyzers]]
 name = "python"
