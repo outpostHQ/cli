@@ -4,5 +4,7 @@ Outpost CLI
 
 # Setup Dev
 ```
-outpost
+pip install --editable .
+
+outpostcli login
 ```
