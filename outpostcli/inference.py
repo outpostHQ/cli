@@ -47,6 +47,40 @@ def deploy_inference(api_token, entity, name):
     click.echo(f"Deployment successful. id: {deploy_data.id}")
 
 
+@inference.command(name="deployments")
+@click.argument("name", type=str, nargs=1)
+@click.option("--api-token", "-t", default=lambda: get_default_api_token_from_config())
+@click.option("--entity", "-e", default=lambda: get_default_entity_from_config())
+def list_inference_deployments(api_token, entity, name):
+    client = Client(api_token=api_token)
+    deployments_resp = Inference(
+        client=client, api_token=api_token, name=name, entity=entity
+    ).list_deploymets()
+
+    inf_table = Table(
+        title=f"Deployments ({deployments_resp.total})",
+    )
+    # "primary_endpoint",
+    inf_table.add_column("id")
+    inf_table.add_column("status")
+    inf_table.add_column("status")
+    inf_table.add_column("concluded_at", justify="right")
+    inf_table.add_column("created_at", justify="right")
+    for inf in deployments_resp.deployments:
+        inf_table.add_row(
+            inf.name,
+            combine_inf_load_source_model(
+                inf.loadModelWeightsFrom, inf.outpostModel, inf.huggingfaceModel
+            ),
+            inf.status,
+            inf.instanceType,
+            inf.visibility,
+            convert_outpost_date_str_to_date(inf.updatedAt).isoformat(),
+        )
+
+    console.print(inf_table)
+
+
 # @inference.command(name="wake")
 # @click.argument("name", type=str, nargs=1)
 # @click.option("--api-token", "-t", default=lambda: get_default_api_token_from_config())
