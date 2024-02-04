@@ -67,7 +67,7 @@ def user(api_token):
     """
     Get details about the currently logged in user.
     """
-    click.echo(json.dumps(Client(api_token=api_token).user.model_dump(), indent=4))
+    click.echo(json.dumps(Client(api_token=api_token).user.__dict__, indent=4))
 
 
 @outpostcli.command(name="sdk-version")

@@ -33,7 +33,7 @@ def list_inferences(api_token, entity):
     inf_table.add_column("name")
     inf_table.add_column("model")
     inf_table.add_column("status")
-    inf_table.add_column("instance_type")
+    inf_table.add_column("hardware_instance")
     inf_table.add_column("visibility")
     inf_table.add_column("updated_at", justify="right")
     for inf in infs_resp.inferences:
@@ -43,7 +43,7 @@ def list_inferences(api_token, entity):
                 inf.loadModelWeightsFrom, inf.outpostModel, inf.huggingfaceModel
             ),
             inf.status,
-            inf.instanceType,
+            inf.hardwareInstance.name,
             inf.visibility,
             convert_outpost_date_str_to_date(inf.updatedAt).isoformat(),
         )
@@ -72,13 +72,13 @@ def list_inferences(api_token, entity):
     help="revision of the model to use.",
 )
 @click.option(
-    "--instance-type",
-    "-i",
+    "--hardware-instance",
+    "-h",
     type=str,
-    help="instnace type to use",
+    help="hardware instance type to use",
 )
 def create_inference(
-    api_token, entity, model, revision, instance_type, huggingface_token_id, name
+    api_token, entity, model, revision, hardware_instance, huggingface_token_id, name
 ):
     client = Client(api_token=api_token)
     m_splits = model.split(":", 1)
@@ -97,7 +97,11 @@ def create_inference(
             }
         else:
             raise SourceNotSupportedError(f"source {m_splits[0]} not supported.")
-    create_body = {**model_details, "instanceType": instance_type, "name": name}
+    create_body = {
+        **model_details,
+        "hardwareInstance": hardware_instance,
+        "name": name,
+    }
     click.echo(create_body)
     create_resp = Inferences(client=client, entity=entity).create(data=create_body)
     click.echo("Inference created...")
