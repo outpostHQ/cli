@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="outpostcli",
-    version="0.0.3",
+    version="0.0.4",
     py_modules=["outpostcli"],
     install_requires=["Click", "outpostkit"],
     entry_points={
