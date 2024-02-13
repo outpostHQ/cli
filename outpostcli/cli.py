@@ -1,20 +1,18 @@
-import json
-
 import click
 import outpostkit
 from outpostkit import Client
+from outpostkit.exceptions import OutpostError, OutpostHTTPException
 
 from .config_utils import (
-    get_default_api_token_from_config,
     purge_config_file,
     remove_details_from_config_file,
     write_details_to_config_file,
 )
 from .constants import cli_version
 from .exceptions import NotLoggedInError
-from .inference import inference
-from .inferences import inferences
-from .utils import check_token, click_group
+from .endpoint import inference
+from .endpoints import endpoints
+from .utils import add_options, api_token_opt, check_token, click_group
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -26,7 +24,7 @@ def outpostcli():
 
 
 # # Add subcommands
-outpostcli.add_command(inferences)
+outpostcli.add_command(endpoints)
 outpostcli.add_command(inference)
 # job.add_command(lep)
 # kv.add_command(lep)
@@ -40,14 +38,7 @@ outpostcli.add_command(inference)
 
 
 @outpostcli.command()
-@click.option(
-    "--api-token",
-    "-t",
-    help="The API token for the outpost user.",
-    default=None,
-    prompt=True,
-    hide_input=True,
-)
+@add_options([api_token_opt])
 def login(api_token: str):
     """
     Login to the outpost.
@@ -62,12 +53,13 @@ def login(api_token: str):
 
 
 @outpostcli.command()
-@click.option("--api-token", "-t", default=lambda: get_default_api_token_from_config())
+@add_options([api_token_opt])
 def user(api_token):
     """
     Get details about the currently logged in user.
     """
-    click.echo(json.dumps(Client(api_token=api_token).user.__dict__, indent=4))
+    click.echo(Client(api_token=api_token).user)
+    # click.echo(json.dumps(Client(api_token=api_token).user, indent=4))
 
 
 @outpostcli.command(name="sdk-version")
@@ -75,7 +67,7 @@ def sdk_version():
     """
     Get details about the currently logged in user.
     """
-    click.echo(outpostkit.__about__.__version__)
+    click.echo(outpostkit.__version__)
 
 
 @outpostcli.command()
@@ -96,3 +88,12 @@ def logout(purge: bool):
             click.echo("Logged out successfully.")
         except NotLoggedInError:
             click.echo("No logged in user found.")
+
+
+def outpost():
+    try:
+        outpostcli()
+    except OutpostError as error:
+        click.echo(f"An error occurred: {error}", err=True)
+    except OutpostHTTPException as error:
+        click.echo(f"""APIException occurred - {error}""", err=True)

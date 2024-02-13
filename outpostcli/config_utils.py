@@ -1,8 +1,7 @@
-import os
 import configparser
+import os
 
 from outpostcli.exceptions import NotLoggedInError
-
 
 CONFIG_FILE = os.environ.get(
     "OUTPOSTCLI_CFG_PATH", os.path.join(os.path.expanduser("~"), ".outpostcli.cfg")

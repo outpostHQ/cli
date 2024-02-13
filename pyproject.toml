@@ -11,7 +11,7 @@ license = { file = "LICENSE" }
 authors = [{ name = "Outpost Innovations, Inc." }]
 requires-python = ">=3.8"
 dependencies = [
-    "outpostkit>=0.0.26",
+    "outpostkit>=0.0.31",
     "click",
     "rich",
 ]
@@ -31,7 +31,7 @@ testpaths = "tests/"
 packages = ["outpostcli"]
 
 [project.scripts]
-outpostcli = "outpostcli.cli:outpostcli"
+outpostcli = "outpostcli.cli:outpost"
 
 [tool.setuptools.package-data]
 "outpostcli" = ["py.typed"]
