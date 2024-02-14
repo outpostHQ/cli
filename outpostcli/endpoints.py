@@ -33,7 +33,7 @@ def list_endpoints(api_token, entity):
     client = Client(api_token=api_token)
     infs_resp = Endpoints(client=client, entity=entity).list()
     inf_table = Table(
-        title=f"Inference Services ({infs_resp.total})",
+        title=f"Endpoints ({infs_resp.total})",
     )
     # "primary_endpoint",
     inf_table.add_column("name")
@@ -283,7 +283,7 @@ def create_endpoint(
             },
         }
         create_resp = Endpoints(client=client, entity=entity).create(json=create_body)
-        click.echo("Inference created...")
+        click.echo("endpoint created...")
     click.echo(f"name: {create_resp.name}")
     click.echo(f"id: {create_resp.id}")
 
@@ -348,7 +348,7 @@ def delete_endpoint(api_token, entity, name):
     ):
         client = Client(api_token=api_token)
         delete_resp = Endpoint(client=client, name=name, entity=entity).delete()
-        return "Inference endpoint deleted."
+        return "endpoint deleted."
 
     return "Aborted"
 
