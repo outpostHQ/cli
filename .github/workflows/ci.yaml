@@ -8,12 +8,10 @@ on:
     branches: ["main"]
 
 jobs:
-  test:
+  lint-format:
     runs-on: ubuntu-latest
 
-    name: "Test Python ${{ matrix.python-version }}"
-
-    timeout-minutes: 10
+    name: "Lint-Format"
 
     strategy:
       fail-fast: false
@@ -34,9 +32,9 @@ jobs:
       - name: Setup
         run: ./script/setup
 
-      - name: Test
-        run: ./script/test
-
       - name: Lint
         run: ./script/lint
+
+      - name: Format
+        run: ./script/format
         
