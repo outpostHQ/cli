@@ -72,7 +72,7 @@ def sdk_version():
 
 @outpostcli.command()
 @click.option("--purge", is_flag=True, help="Purge the config file of the login info.")
-def logout(purge: bool):
+def logout(purge: bool):  # noqa: FBT001
     """
     Logout of the outpost.
     """
@@ -112,8 +112,8 @@ def predict(
     get prediction from endpoint
     """
     client = Client(api_token=api_token)
-    inference_resource = Endpoint(client=client, entity=entity, name=name).get()
-
+    predictor = Endpoint(client=client, entity=entity, name=name).get_predictor()
+    click.echo(predictor.healthcheck())
 
 def outpost():
     try:
