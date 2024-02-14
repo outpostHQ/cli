@@ -124,6 +124,7 @@ def list_endpoints(api_token, entity):
     "--visibility",
     type=click.Choice(["private", "public", "internal"]),
     # type=str,
+    default="private",
     help="visibility of the endpoint",
     required=False,
 )
@@ -169,13 +170,12 @@ def create_endpoint(
     replica_scaling_min: int,
     replica_scaling_max: int,
     visibility: str,
-    replica_scaling_scaledowm_period: int,
+    replica_scaling_scaledown_period: int,
     replica_scaling_target_pending_req: int,
 ):
     client = Client(api_token=api_token)
     if template_path:
         [actual_path, class_name] = template_path.rsplit(":", 1)
-        click.echo(f"{actual_path},{class_name}")
         if not actual_path or not class_name:
             click.echo(
                 "Please specify the template classname along with the path.", err=True
@@ -187,7 +187,6 @@ def create_endpoint(
         try:
             result = urlparse(actual_path)
             if all([result.scheme, result.netloc]):
-                click.echo("url")
                 data = {
                     "templateType": "custom",
                     "customTemplateConfig": {
@@ -203,7 +202,7 @@ def create_endpoint(
                     "replicaScalingConfig": {
                         "min": replica_scaling_min,
                         "max": replica_scaling_max,
-                        "scaledownPeriod": replica_scaling_scaledowm_period,
+                        "scaledownPeriod": replica_scaling_scaledown_period,
                         "targetPendingRequests": replica_scaling_target_pending_req,
                     },
                 }
@@ -212,8 +211,6 @@ def create_endpoint(
                 raise ValueError("Not an url.")
         except ValueError:
             if os.path.exists(actual_path) and os.path.isfile(actual_path):
-                click.echo("file")
-                # do something
                 data = {
                     "templateType": "custom",
                     "customTemplateConfig": {
@@ -228,7 +225,7 @@ def create_endpoint(
                     "replicaScalingConfig": {
                         "min": replica_scaling_min,
                         "max": replica_scaling_max,
-                        "scaledownPeriod": replica_scaling_scaledowm_period,
+                        "scaledownPeriod": replica_scaling_scaledown_period,
                         "targetPendingRequests": replica_scaling_target_pending_req,
                     },
                 }
@@ -278,7 +275,7 @@ def create_endpoint(
             "replicaScalingConfig": {
                 "min": replica_scaling_min,
                 "max": replica_scaling_max,
-                "scaledownPeriod": replica_scaling_scaledowm_period,
+                "scaledownPeriod": replica_scaling_scaledown_period,
                 "targetPendingRequests": replica_scaling_target_pending_req,
             },
         }
