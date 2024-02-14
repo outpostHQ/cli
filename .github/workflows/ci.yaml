@@ -11,7 +11,9 @@ jobs:
   lint-format:
     runs-on: ubuntu-latest
 
-    name: "Lint-Format"
+    name: "Lint-Format ${{ matrix.python-version }}"
+
+    timeout-minutes: 10
 
     strategy:
       fail-fast: false
