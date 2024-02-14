@@ -50,4 +50,4 @@ git tag 0.0.7
 git push --tags
 ```
 
-Then visit [github.com/outposthq/outpostkit-python/actions](https://github.com/outposthq/cli/actions) to monitor the release process.
+Then visit [github.com/outposthq/cli/actions](https://github.com/outposthq/cli/actions) to monitor the release process.
