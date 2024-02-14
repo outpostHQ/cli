@@ -11,7 +11,7 @@ license = { file = "LICENSE" }
 authors = [{ name = "Outpost Innovations, Inc." }]
 requires-python = ">=3.8"
 dependencies = [
-    "outpostkit>=0.0.33",
+    "outpostkit>=0.0.34",
     "click",
     "rich",
 ]

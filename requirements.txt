@@ -28,7 +28,7 @@ markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-outpostkit==0.0.33
+outpostkit==0.0.34
     # via outpostcli (pyproject.toml)
 packaging==23.2
     # via outpostkit
