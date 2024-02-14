@@ -42,7 +42,7 @@ def list_endpoints(api_token, entity):
     inf_table.add_column("hardware_instance")
     inf_table.add_column("visibility")
     inf_table.add_column("updated_at", justify="right")
-    for inf in infs_resp.inferences:
+    for inf in infs_resp.endpoints:
         inf_table.add_row(
             inf.name,
             combine_inf_load_source_model(
@@ -65,7 +65,7 @@ def list_endpoints(api_token, entity):
     type=str,
     default=None,
     required=False,
-    help="name of the inference endpoint to create.",
+    help="name of the endpoint to create.",
 )
 @click.option(
     "--huggingface-token-id",
@@ -291,7 +291,7 @@ def create_endpoint(
 @endpoints.command("get")
 @add_options([api_token_opt, entity_opt])
 @click.argument("name", type=str, nargs=1)
-def get_inferences(api_token, entity, name):
+def get_endpoint(api_token, entity, name):
     client = Client(api_token=api_token)
     inf_data = Endpoint(client=client, name=name, entity=entity).get()
     click.echo(inf_data.__dict__)
@@ -300,7 +300,7 @@ def get_inferences(api_token, entity, name):
 @endpoints.command(name="deploy")
 @click.argument("name", type=str, nargs=1)
 @add_options([api_token_opt, entity_opt])
-def deploy_inference(api_token, entity, name):
+def deploy_endpoint(api_token, entity, name):
     client = Client(api_token=api_token)
     deploy_data = Endpoint(client=client, name=name, entity=entity).deploy({})
     click.echo(f"Deployment successful. id: {deploy_data.id}")
@@ -309,7 +309,7 @@ def deploy_inference(api_token, entity, name):
 @endpoints.command(name="deployments")
 @add_options([api_token_opt, entity_opt])
 @click.argument("name", type=str, nargs=1)
-def list_inference_deployments(api_token, entity, name):
+def list_endpoint_deployments(api_token, entity, name):
     client = Client(api_token=api_token)
     deployments_resp = Endpoint(
         client=client, name=name, entity=entity
@@ -341,7 +341,7 @@ def list_inference_deployments(api_token, entity, name):
 @endpoints.command(name="delete")
 @click.argument("name", type=str, nargs=1)
 @add_options([api_token_opt, entity_opt])
-def delete_inference(api_token, entity, name):
+def delete_endpoint(api_token, entity, name):
     fullName = f"{entity}/{name}"
     if click.confirm(
         f"do you really want to delete this endpoint: {fullName} ?", abort=True

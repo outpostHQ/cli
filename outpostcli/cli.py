@@ -26,15 +26,6 @@ def outpostcli():
 
 # # Add subcommands
 outpostcli.add_command(endpoints)
-# job.add_command(lep)
-# kv.add_command(lep)
-# objectstore.add_command(lep)
-# photon.add_command(lep)
-# pod.add_command(lep)
-# queue.add_command(lep)
-# secret.add_command(lep)
-# storage.add_command(lep)
-# workspace.add_command(lep)
 
 
 @outpostcli.command()
@@ -114,6 +105,7 @@ def predict(
     client = Client(api_token=api_token)
     predictor = Endpoint(client=client, entity=entity, name=name).get_predictor()
     click.echo(predictor.healthcheck())
+
 
 def outpost():
     try:
