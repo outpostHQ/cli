@@ -1,6 +1,8 @@
+from typing import Optional
+
 import click
 import outpostkit
-from outpostkit import Client
+from outpostkit import Client, Endpoint
 from outpostkit.exceptions import OutpostError, OutpostHTTPException
 
 from .config_utils import (
@@ -9,10 +11,9 @@ from .config_utils import (
     write_details_to_config_file,
 )
 from .constants import cli_version
-from .exceptions import NotLoggedInError
-from .endpoint import inference
 from .endpoints import endpoints
-from .utils import add_options, api_token_opt, check_token, click_group
+from .exceptions import NotLoggedInError
+from .utils import add_options, api_token_opt, check_token, click_group, entity_opt
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -25,7 +26,6 @@ def outpostcli():
 
 # # Add subcommands
 outpostcli.add_command(endpoints)
-outpostcli.add_command(inference)
 # job.add_command(lep)
 # kv.add_command(lep)
 # objectstore.add_command(lep)
@@ -88,6 +88,31 @@ def logout(purge: bool):
             click.echo("Logged out successfully.")
         except NotLoggedInError:
             click.echo("No logged in user found.")
+
+
+@outpostcli.command()
+@add_options([api_token_opt, entity_opt])
+@click.argument("name", type=str, nargs=1)
+@click.option("--json-payload", "-j", type=str, help="json payload")
+@click.option("--file-payload", "-f", type=str, help="file payload")
+@click.option("--data-payload", "-d", type=str, help="form data payload")
+@click.option("--query-params", "-q", type=str, help="query params")
+@click.option("--headers", "-h", type=str, help="headers")
+def predict(
+    name: str,
+    api_token: str,
+    entity: str,
+    data_payload: Optional[str],
+    file_payload: Optional[str],
+    json_payload: Optional[str],
+    query_params: Optional[str],
+    headers: Optional[str],
+):
+    """
+    get prediction from endpoint
+    """
+    client = Client(api_token=api_token)
+    inference_resource = Endpoint(client=client, entity=entity, name=name).get()
 
 
 def outpost():
