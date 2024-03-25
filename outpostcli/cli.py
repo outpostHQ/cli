@@ -29,7 +29,14 @@ outpostcli.add_command(endpoints)
 
 
 @outpostcli.command()
-@add_options([api_token_opt])
+@click.option(
+    "--api-token",
+    "-t",
+    help="The API token for the outpost user.",
+    default=None,
+    prompt=True,
+    hide_input=True,
+)
 def login(api_token: str):
     """
     Login to the outpost.
@@ -111,6 +118,6 @@ def outpost():
     try:
         outpostcli()
     except OutpostError as error:
-        click.echo(f"An error occurred: {error}", err=True)
+        click.echo(f"Error: {error}", err=True)
     except OutpostHTTPException as error:
-        click.echo(f"""APIException occurred - {error}""", err=True)
+        click.echo(f"""APIException: - {error}""", err=True)

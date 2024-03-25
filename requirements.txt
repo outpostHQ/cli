@@ -12,6 +12,9 @@ certifi==2024.2.2
     # via
     #   httpcore
     #   httpx
+    #   requests
+charset-normalizer==3.3.2
+    # via requests
 click==8.1.7
     # via outpostcli (pyproject.toml)
 h11==0.14.0
@@ -24,11 +27,12 @@ idna==3.6
     # via
     #   anyio
     #   httpx
+    #   requests
 markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-outpostkit==0.0.44
+outpostkit==0.0.47
     # via outpostcli (pyproject.toml)
 packaging==23.2
     # via outpostkit
@@ -38,6 +42,8 @@ pydantic-core==2.16.2
     # via pydantic
 pygments==2.17.2
     # via rich
+requests==2.31.0
+    # via outpostcli (pyproject.toml)
 rich==13.7.0
     # via outpostcli (pyproject.toml)
 sniffio==1.3.0
@@ -49,3 +55,5 @@ typing-extensions==4.9.0
     #   outpostkit
     #   pydantic
     #   pydantic-core
+urllib3==2.2.1
+    # via requests

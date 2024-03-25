@@ -31,6 +31,7 @@ def remove_details_from_config_file():
     config.read(CONFIG_FILE)
     api_token = config["DEFAULT"].get("API_TOKEN")
     entity = config["DEFAULT"].get("ENTITY")
+    # base_url = con
     if entity:
         del config["DEFAULT"]["ENTITY"]
     if api_token:

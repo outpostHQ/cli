@@ -27,7 +27,7 @@ from outpostcli.utils import (
     console,
     entity_opt,
 )
-
+from outpostkit._utils.constants import ServiceVisibility
 
 @click_group()
 def endpoints():
@@ -193,7 +193,13 @@ def create_endpoint(
     prebuilt_container_config: Optional[str],
     secret: Optional[List[str]],
 ):
-    client = Client(api_token=api_token)
+    client = Client(api_token=api_token, base_url="http://localhost:3000/v1")
+    try:
+        visibility = ServiceVisibility[visibility]
+    except KeyError as e:
+        raise OutpostError(
+            "Invalid visibility choice. choices are, `private`, `public` and `internal`.",
+        ) from e
     if template_path:
         [actual_path, class_name] = template_path.rsplit(":", 1)
         if not actual_path or not class_name:
@@ -208,11 +214,13 @@ def create_endpoint(
             result = urlparse(actual_path)
             if all([result.scheme, result.netloc]):
                 custom_template_config = EndpointCustomTemplateConfig(type="url",path=actual_path, className=class_name)
-                config = None
-                try:
-                    config = json.loads(prebuilt_container_config)
-                except json.JSONDecodeError as e:
-                    raise OutpostError(f"Invalid JSON: prebuilt_container_config: {str(e)}") from e
+                if prebuilt_container_config is not None:
+                    try:
+                        config = json.loads(prebuilt_container_config)
+                    except json.JSONDecodeError as e:
+                        raise OutpostError(
+                            f"Invalid JSON: prebuilt_container_config: {str(e)}"
+                        ) from e
                 prebuilt_container_details = EndpointPrebuiltContainerDetails(name=prebuilt_container, config=config)
                 replica_scaling_config=  ReplicaScalingConfig(
                         min= replica_scaling_min,
@@ -225,15 +233,32 @@ def create_endpoint(
                     secrets = []
                     for s in secret:
                         name,value = s.split('=',maxsplit=1)
-                        if(name =='' or value ==''):
-                            raise OutpostError(f"Invalid secret config: {"name" if name =='' else "value"} empty")
+                        if name == "":
+                            raise OutpostError("Invalid secret config: name empty.")
                         secrets.append(EndpointSecret(name=name,value=value))
-                create_resp = Endpoints(client=client, entity=entity).create(template=custom_template_config, container=prebuilt_container_details, hardware_instance=hardware_instance, task_type=task_type, name=name,visibility=visibility, replica_scaling_config=replica_scaling_config, secrets=secrets)
+                create_resp = Endpoints(client=client, entity=entity).create(
+                    template=custom_template_config,
+                    container=prebuilt_container_details,
+                    hardware_instance=hardware_instance,
+                    task_type=task_type,
+                    name=name,
+                    visibility=visibility,
+                    replica_scaling_config=replica_scaling_config,
+                    secrets=secrets,
+                )
             else:
                 raise ValueError("Not an url.")
         except ValueError:
             if os.path.exists(actual_path) and os.path.isfile(actual_path):
                 custom_template_config = EndpointCustomTemplateConfig(type="file",path=actual_path, className=class_name)
+                config = None
+                if prebuilt_container_config is not None:
+                    try:
+                        config = json.loads(prebuilt_container_config)
+                    except json.JSONDecodeError as e:
+                        raise OutpostError(
+                            f"Invalid JSON: prebuilt_container_config: {str(e)}"
+                        ) from e
                 prebuilt_container_details = EndpointPrebuiltContainerDetails(name=prebuilt_container, config=config)
                 replica_scaling_config=  ReplicaScalingConfig(
                         min= replica_scaling_min,
@@ -246,11 +271,22 @@ def create_endpoint(
                     secrets = []
                     for s in secret:
                         name,value = s.split('=',maxsplit=1)
-                        if(name =='' or value ==''):
-                            raise OutpostError(f"Invalid secret config: {"name" if name =='' else "value"} empty") from None
+                        if name == "":
+                            raise OutpostError(
+                                "Invalid secret config: name empty"
+                            ) from None
                         secrets.append(EndpointSecret(name=name,value=value))
 
-                create_resp = Endpoints(client=client, entity=entity).create(template=custom_template_config, container=prebuilt_container_details, hardware_instance=hardware_instance, task_type=task_type, name=name,visibility=visibility, replica_scaling_config=replica_scaling_config, secrets=secrets)
+                create_resp = Endpoints(client=client, entity=entity).create(
+                    template=custom_template_config,
+                    container=prebuilt_container_details,
+                    hardware_instance=hardware_instance,
+                    task_type=task_type,
+                    name=name,
+                    visibility=visibility,
+                    replica_scaling_config=replica_scaling_config,
+                    secrets=secrets,
+                )
             else:
                 click.echo("Invalid template file path.", err=True)
                 return
@@ -291,14 +327,21 @@ def create_endpoint(
             secrets = []
             for s in secret:
                 name,value = s.split('=',maxsplit=1)
-                if(name =='' or value ==''):
-                    raise OutpostError(f"Invalid secret config: {"name" if name =='' else "value"} empty") from None
+                if name == "":
+                    raise OutpostError("Invalid secret config: name empty.") from None
                 secrets.append(EndpointSecret(name=name,value=value))
 
-        create_resp = Endpoints(client=client, entity=entity).create(template=template_config, container=prebuilt_container_details, hardware_instance=hardware_instance, task_type=task_type, name=name,visibility=visibility, replica_scaling_config=replica_scaling_config, secrets=secrets)
-        click.echo("endpoint created...")
-    click.echo(f"name: {create_resp.name}")
-    click.echo(f"id: {create_resp.id}")
+        create_resp = Endpoints(client=client, entity=entity).create(
+            template=template_config,
+            container=prebuilt_container_details,
+            hardware_instance=hardware_instance,
+            task_type=task_type,
+            name=name,
+            visibility=visibility,
+            replica_scaling_config=replica_scaling_config,
+            secrets=secrets,
+        )
+    click.echo(f"Endpoint created.\nname: {create_resp.name}")
 
 
 @endpoints.command("get")
@@ -306,7 +349,11 @@ def create_endpoint(
 @click.argument("name", type=str, nargs=1)
 def get_endpoint(api_token, entity, name):
     client = Client(api_token=api_token)
-    inf_data = Endpoint(client=client, name=name, entity=entity).get()
+    inf_data = Endpoint(
+        client=client,
+        name=name,
+        entity=entity,
+    ).get()
     click.echo(inf_data.__dict__)
 
 
@@ -315,7 +362,7 @@ def get_endpoint(api_token, entity, name):
 @add_options([api_token_opt, entity_opt])
 def deploy_endpoint(api_token, entity, name):
     client = Client(api_token=api_token)
-    deploy_data = Endpoint(client=client, name=name, entity=entity).deploy({})
+    deploy_data = Endpoint(client=client, name=name, entity=entity).deploy()
     click.echo(f"Deployment successful. id: {deploy_data.id}")
 
 
