@@ -193,7 +193,7 @@ def create_endpoint(
     prebuilt_container_config: Optional[str],
     secret: Optional[List[str]],
 ):
-    client = Client(api_token=api_token, base_url="http://localhost:3000/v1")
+    client = Client(api_token=api_token)
     try:
         visibility = ServiceVisibility[visibility]
     except KeyError as e:
